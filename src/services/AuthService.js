@@ -1,6 +1,10 @@
 import axios from 'axios';
+import {UnAuthorized, InvalidCredentialError} from '../utils/errors/Error';
 
 export const verifyAdmin = async (headers = {}) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get(`http://localhost:8081/api/auth/verifyAdmin`, {
@@ -11,12 +15,14 @@ export const verifyAdmin = async (headers = {}) => {
         });
         return response.data;
     } catch (error) {
-        console.error("There was an error verifying admin status!", error);
         throw error;
     }
 };
 
 export const verifyCustomer = async (headers = {}) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get(`http://localhost:8081/api/auth/verifyCustomer`, {
@@ -27,7 +33,6 @@ export const verifyCustomer = async (headers = {}) => {
         });
         return response.data;
     } catch (error) {
-        console.error("There was an error verifying customer status!", error);
         throw error;
     }
 };
@@ -40,13 +45,19 @@ export const loginService = async (email, password) => {
       });
       return response.data;
     } catch (error) {
-      console.error("There was an error logging in!", error);
-      throw new Error('Error logging in. Please try again.');
+        if(error.response && error.response.status === 400){
+            throw new InvalidCredentialError("Invalid Credentials");
+        }else{
+            throw error;
+        }
     }
   };
   
 
   export const getUser = async () => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get('http://localhost:8081/api/auth/profile', {
@@ -64,6 +75,9 @@ export const loginService = async (email, password) => {
 
 
   export const setUser = async (userData) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.put('http://localhost:8081/api/auth/profile', 

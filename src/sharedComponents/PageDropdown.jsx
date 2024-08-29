@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, InputGroup } from 'react-bootstrap';
 
-const PageDropdown = ({ noOfPages, setPageNo }) => {
+const PageDropdown = ({ noOfPages, currentPage, setPageNo }) => {
     const pageNumbers = Array.from({ length: noOfPages }, (_, i) => i + 1);
 
     return (
@@ -9,6 +9,7 @@ const PageDropdown = ({ noOfPages, setPageNo }) => {
             <InputGroup>
                 <InputGroup.Text style={{ marginRight: '0.5rem' }}>Page:</InputGroup.Text>
                 <Form.Select 
+                    value={currentPage}
                     onChange={(e) => setPageNo(Number(e.target.value))}
                     style={{
                         width: '80px',

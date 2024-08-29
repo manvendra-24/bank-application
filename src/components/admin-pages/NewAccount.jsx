@@ -2,27 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Card} from 'react-bootstrap';
 
+
 import { getAllBanks } from '../../services/BankService';
 import { createAccount } from '../../services/AccountService';
 import { verifyAdmin } from '../../services/AuthService';
 
 import Header from '../layout/Header';
 import Footer from '../layout/Footer';
+
 import BackButton from '../../sharedComponents/BackButton';
-import { Toast } from 'react-bootstrap';
-import ErrorPage from '../../sharedComponents/ErrorPage';
 import Loader from '../../sharedComponents/Loader';
+
+import ToastNotification, { showToast } from '../../sharedComponents/ToastNotification';
+
 
 
 const CreateAccount = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [customer_id, setCustomerId] = useState('');
   const [bank_id, setBankId] = useState('');
   const [banks, setBanks] = useState([]);
-  const [showToast, setShowToast] = useState(false);
-  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const CreateAccount = () => {
         setBanks(banksData);
       } catch (error) {
         console.error('Failed to fetch banks:', error);
-        setError('Failed to fetch banks');
+        showToast('Failed to fetch banks', 'error');
       }
     };
 
@@ -56,8 +56,6 @@ const CreateAccount = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
 
     const accountData = {
       customer_id,
@@ -66,28 +64,23 @@ const CreateAccount = () => {
 
     try {
       await createAccount(accountData);
-      setSuccess("Accout created successfully")
+      showToast('Account created successfully!', 'success');
+      setTimeout(() => {
+        navigate(-1);
+      }, 500);
     } catch (error) {
       console.error('Failed to create account:', error);
-      setError('Failed to create account');
+      showToast('Failed to create account', 'error');
     }
-    setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-        navigate(-1);
-      }, 2000);
   };
 
+  if(!isAdmin){
+    return null;
+  }
 
   if (loading) {
     return (
       <Loader/>
-    );
-  }
-
-  if (error) {
-    return (
-      <ErrorPage/>
     );
   }
 
@@ -152,15 +145,8 @@ const CreateAccount = () => {
       </div>
       <hr />
       <Footer />
-      <Toast
-        onClose={() => setShowToast(false)}
-        show={showToast}
-        delay={2000}
-        autohide
-        style={{ position: 'fixed', bottom: '20px', right: '20px' }}
-      >
-        <Toast.Body>{success}</Toast.Body>
-      </Toast>
+      <ToastNotification />
+
     </Container>
   );
 };

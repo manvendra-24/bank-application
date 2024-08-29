@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
-import { addCustomer, addAdmin } from '../../services/CustomerService';
+import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+
+import { addCustomer, addAdmin } from '../../services/CustomerService';
 import BackButton from '../../sharedComponents/BackButton';
-import { Toast } from 'react-bootstrap';
-import Header from '../layout/Header';
-import Footer from '../layout/Footer';
+import ToastNotification, { showToast } from '../../sharedComponents/ToastNotification';
+import {
+  required,
+  isEmail,
+  isAlpha,
+  isAlphaNumNoSpace,
+  checkSize,
+  noSpace
+} from '../../utils/helpers/Validation';
 
 const Register = ({ role }) => {
   const [formData, setFormData] = useState({
@@ -15,9 +22,7 @@ const Register = ({ role }) => {
     email: '',
     password: ''
   });
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [showToast, setShowToast] = useState(false);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,49 +30,49 @@ const Register = ({ role }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    newErrors.firstname = required(formData.firstname) || isAlpha(formData.firstname);
+    newErrors.lastname = required(formData.lastname) || isAlpha(formData.lastname);
+    newErrors.username = required(formData.username) || isAlphaNumNoSpace(formData.username);
+    newErrors.email = required(formData.email) || isEmail(formData.email);
+    newErrors.password = required(formData.password) || noSpace(formData.password)|| checkSize(formData.password, 8, 15);
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every(error => !error);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+
+    if (!validateForm()) {
+      return;
+    }
 
     try {
       if (role === 'customer') {
         await addCustomer(formData);
-        setSuccess('Customer registered successfully!');
+        showToast('Customer registered successfully!', 'success');
       } else if (role === 'admin') {
         await addAdmin(formData);
-        setSuccess('Admin registered successfully!');
+        showToast('Admin registered successfully!', 'success');
       } else {
-        setError('Invalid role specified.');
+        showToast('Error in registering user!', 'error');
         return;
       }
-      setShowToast(true);
+
       setTimeout(() => {
-        setShowToast(false);
         navigate(-1);
       }, 2000);
     } catch (err) {
       console.error('Registration failed:', err);
-      setError('Registration failed. Please try again.');
+      showToast('Registration failed', 'error');
+      setTimeout(() => {
+        navigate(-1);
+      }, 2000);
     }
   };
-
-  
-  if (error) {
-    return (
-      <Container fluid className="bg-light text-dark d-flex flex-column min-vh-100">
-        <Header />
-        <div className="flex-grow-1">
-          <Container className="mt-5">
-            <Alert variant="danger" className="text-center">
-              {error}
-            </Alert>
-          </Container>
-        </div>
-        <Footer />
-      </Container>
-    );
-  }
 
   return (
     <Container fluid className="bg-light text-dark d-flex flex-column min-vh-100">
@@ -86,8 +91,11 @@ const Register = ({ role }) => {
                         name="firstname"
                         value={formData.firstname}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors.firstname}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.firstname}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -100,8 +108,11 @@ const Register = ({ role }) => {
                         name="lastname"
                         value={formData.lastname}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors.lastname}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.lastname}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -114,8 +125,11 @@ const Register = ({ role }) => {
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors.username}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.username}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -128,8 +142,11 @@ const Register = ({ role }) => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors.email}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.email}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -142,8 +159,11 @@ const Register = ({ role }) => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!errors.password}
                       />
+                      <Form.Control.Feedback type="invalid">
+                        {errors.password}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   </Col>
                 </Row>
@@ -162,16 +182,7 @@ const Register = ({ role }) => {
           </Card>
         </Container>
       </div>
-
-      <Toast
-        onClose={() => setShowToast(false)}
-        show={showToast}
-        delay={2000}
-        autohide
-        style={{ position: 'fixed', bottom: '20px', right: '20px' }}
-      >
-        <Toast.Body>{success}</Toast.Body>
-      </Toast>
+      <ToastNotification />
     </Container>
   );
 };

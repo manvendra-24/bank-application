@@ -35,6 +35,7 @@ const MyAccounts = () => {
         }
       } catch (error) {
         console.error('Error during customer verification:', error);
+        navigate('/unauthorized')
       }
     };
 
@@ -73,20 +74,16 @@ const MyAccounts = () => {
 
   const handleDeleteAccount = async (account_number) => {
     console.log(account_number);
-    if (window.confirm('Are you sure you want to delete this account?')) {
       try {
         await deleteAccount(account_number);
         setAccounts((prevAccounts) => prevAccounts.filter((account) => account.account_number !== account_number));
       } catch (err) {
         console.error('Error deleting account:', err);
       }
-    }
   };
 
   if (!isCustomer) {
-    return(
-      <Unauthorized/>
-    );
+    return null;
   }
 
   if (loading) {

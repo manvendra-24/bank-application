@@ -37,7 +37,7 @@ function App() {
 
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route exact path='/customers' element={<CustomersTable />}></Route>
-            <Route exact path='/accounts' element={<AccountsTable all={"true"}/>}></Route>
+            <Route exact path='/accounts/' element={<AccountsTable all={"true"}/>}></Route>
             <Route exact path='/transactions' element={<TransactionsTable />}></Route>
             <Route exact path='/banks' element={<BanksCard />}></Route>
             <Route exact path='/banks/:bank_id/accounts' element={<AccountsTable/>}></Route>

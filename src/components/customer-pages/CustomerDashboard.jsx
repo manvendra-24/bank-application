@@ -38,7 +38,7 @@ const CustomerDashboard = () => {
           navigate('/unauthorized');
         }
       } catch (error) {
-        console.error('Error during customer verification:', error);
+        navigate('/unauthorized');
       }
     };
 
@@ -50,7 +50,6 @@ const CustomerDashboard = () => {
         setMyAccountsCount(accountsCount);
       } catch (error) {
         setError("Error fetching dashboard data");
-        console.error('Error fetching dashboard data:', error);
       } finally {
         setLoading(false);
       }
@@ -59,6 +58,10 @@ const CustomerDashboard = () => {
     checkCustomerStatus();
   }, [navigate]);
 
+  if(!isCustomer){
+    return null;
+  }
+  
   if (loading) {
     return <Loader />;
   }

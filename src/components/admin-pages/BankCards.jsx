@@ -12,6 +12,8 @@ import BankCard from '../../sharedComponents/BankCard';
 import BackButton from '../../sharedComponents/BackButton';
 import ErrorPage from '../../sharedComponents/ErrorPage';
 import Loader from '../../sharedComponents/Loader';
+import ToastNotification, { showToast } from '../../sharedComponents/ToastNotification';
+
 
 import Unauthorized from '../auth-pages/UnauthorizedAccess';
 
@@ -35,6 +37,7 @@ const BankCards = () => {
         }
       } catch (error) {
         console.error('Error during admin verification:', error);
+        navigate('/unauthorized');
       }
     };
 
@@ -94,6 +97,8 @@ const BankCards = () => {
       </div>
       <hr/>
       <Footer />
+      <ToastNotification />
+
     </Container>
   );
 };

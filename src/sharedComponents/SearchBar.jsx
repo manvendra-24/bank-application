@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Button, InputGroup } from 'react-bootstrap';
 
-const SearchBar = ({ onSearch}) => {
-    const [searchQuery, setSearchQuery] = useState('');
+const SearchBar = ({ onSearch, defaultValue }) => {
+    const [searchQuery, setSearchQuery] = useState(defaultValue);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
@@ -15,9 +15,16 @@ const SearchBar = ({ onSearch}) => {
 
     const handleReset = (e) => {
         e.preventDefault();
+        if (searchQuery === '') {
+            return;
+        }
         setSearchQuery('');
-        onSearch(searchQuery);
+        onSearch('');
     };
+
+    useEffect(() => {
+        setSearchQuery(defaultValue);
+    }, [defaultValue]);
 
     return (
         <Form onSubmit={handleSearchSubmit} className="d-flex justify-content-end mb-3">

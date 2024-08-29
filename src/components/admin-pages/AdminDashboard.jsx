@@ -13,6 +13,8 @@ import Header from '../layout/Header';
 import Footer from '../layout/Footer';
 import QuickAccess from '../layout/QuickAccess';
 import DashboardCard from '../layout/DashboardCard';
+import ToastNotification, { showToast } from '../../sharedComponents/ToastNotification';
+
 
 import Loader from '../../sharedComponents/Loader';
 import ErrorPage from '../../sharedComponents/ErrorPage';
@@ -43,6 +45,7 @@ const AdminDashboard = () => {
                 }
             } catch (error) {
                 console.error('Error during admin verification:', error);
+                navigate('/unauthorized');
             }
         };
 
@@ -127,6 +130,8 @@ const AdminDashboard = () => {
             </Container>
             <hr/>
             <Footer />
+            <ToastNotification />
+
         </Container>
     );
 }

@@ -4,7 +4,10 @@ import { Container, Row, Col, Form, Button, Card } from 'react-bootstrap';
 
 import { loginService } from '../../services/AuthService';
 
-import Footer from '../layout/Footer';
+import ToastNotification, { showToast } from '../../sharedComponents/ToastNotification';
+import { InvalidCredentialError } from '../../utils/errors/Error';
+
+
 
 
 const Login = () => {
@@ -18,23 +21,21 @@ const Login = () => {
     event.preventDefault();
     try {
       const data = await loginService(email, password);
-
       if (data.role === 'admin') {
         const token = data['accessToken'];
         localStorage.setItem("token", token);
+        showToast('Logged in successfully!', 'success');
         navigate('/admin-dashboard');
       } 
       else if (data.role === 'customer') {
         const token = data['accessToken'];
         localStorage.setItem("token", token);
+        showToast('Logged in successfully!', 'success');
         navigate('/customer-dashboard');
       }
-      else {
-        setError('Invalid login credentials');
-      }
-    } 
-    catch (error) {
-      setError('Error logging in. Please try again.');
+    } catch(error){
+      setError(error.specificMessage);
+      showToast(error.specificMessage, 'error')
     }
   };
 
@@ -71,7 +72,6 @@ const Login = () => {
                   Login
                 </Button>
               </Form>
-              {error && <div>{error}</div>}
               <hr />
               <div className="text-center">
                 <span>New User? </span>
@@ -84,6 +84,7 @@ const Login = () => {
         </Col>
       </Row>
       </Container>
+      <ToastNotification />
     </Container>
   );
 };

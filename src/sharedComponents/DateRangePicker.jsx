@@ -1,27 +1,46 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Row, Col, Button } from 'react-bootstrap';
 
-const DateRangePicker = ({onSearch }) => {
+const DateRangePicker = ({ startDate, endDate, setStartDate, setEndDate, onSearch }) => {
+  const [localStartDate, setLocalStartDate] = useState(startDate);
+  const [localEndDate, setLocalEndDate] = useState(endDate);
 
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+  useEffect(() => {
+    setLocalStartDate(startDate);
+  }, [startDate]);
+
+  useEffect(() => {
+    setLocalEndDate(endDate);
+  }, [endDate]);
 
   const handleStartDateChange = (e) => {
-    setStartDate(e.target.value);
+    const newStartDate = e.target.value;
+    setLocalStartDate(newStartDate);
+    if (localEndDate && newStartDate && newStartDate > localEndDate) {
+      setLocalEndDate('');
+    }
   };
 
   const handleEndDateChange = (e) => {
-    setEndDate(e.target.value);
+    const newEndDate = e.target.value;
+    setLocalEndDate(newEndDate);
   };
 
   const handleSearchClick = () => {
-    onSearch(startDate, endDate);
+    setStartDate(localStartDate); 
+    setEndDate(localEndDate);  
+    onSearch(localStartDate, localEndDate);
   };
 
   const handleResetClick = () => {
+    setLocalStartDate('');
+    setLocalEndDate('');
+    if (startDate === '' && endDate === '') {
+      return;
+    }
     setStartDate('');
     setEndDate('');
-    onSearch(startDate, endDate);
+    onSearch('', '');
   };
 
   return (
@@ -32,7 +51,7 @@ const DateRangePicker = ({onSearch }) => {
             <Form.Label>Start Date</Form.Label>
             <Form.Control
               type="date"
-              value={startDate}
+              value={localStartDate}
               onChange={handleStartDateChange}
             />
           </Form.Group>
@@ -42,8 +61,9 @@ const DateRangePicker = ({onSearch }) => {
             <Form.Label>End Date</Form.Label>
             <Form.Control
               type="date"
-              value={endDate}
+              value={localEndDate}
               onChange={handleEndDateChange}
+              min={localStartDate}
             />
           </Form.Group>
         </Col>

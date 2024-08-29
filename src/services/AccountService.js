@@ -1,4 +1,8 @@
 import axios from 'axios';
+import {NotFoundError} from '../utils/errors/Error';
+
+
+
 
 export const getAllAccounts = async (params = {}, headers = {}) => {
     const token = localStorage.getItem('token');
@@ -30,6 +34,7 @@ export const activateAccount = async (id) => {
         return response.data;
     } catch (error) {
         console.error('There was an error activating the account!', error);
+
         throw error;
     }
 };
@@ -46,6 +51,7 @@ export const deactivateAccount = async (id) => {
       return response.data;
     } catch (error) {
       console.error('There was an error deleting the account!', error);
+
       throw error;
     }
   };
@@ -65,6 +71,7 @@ export const getMyAccounts = async () => {
         return response.data;
     } catch (error) {
         console.error('Error fetching accounts:', error);
+
         throw error;
     }
 };
@@ -83,6 +90,7 @@ export const downloadPassbook = async (accountId) => {
       return response.data;
     } catch (error) {
       console.error('Error downloading passbook:', error);
+
       throw error;
     }
   };
@@ -98,6 +106,7 @@ export const downloadPassbook = async (accountId) => {
       });
     } catch (error) {
       console.error('Error deleting account:', error);
+
       throw error;
     }
   };
@@ -114,6 +123,7 @@ export const downloadPassbook = async (accountId) => {
       return response.data;
     } catch (error) {
       console.error('Error getting total accounts:', error);
+
       throw error;
     }
 
@@ -130,9 +140,13 @@ export const downloadPassbook = async (accountId) => {
       });
       return response.data;
     } catch (error) {
-      console.error('Error getting total accounts:', error);
-      throw error;
-    }
+      if(error.response && error.response.status === 404){
+          throw new NotFoundError("Account not found");
+      } else{
+          throw error;
+      }
+      
+  }
 
   }
 
@@ -150,6 +164,7 @@ export const downloadPassbook = async (accountId) => {
       return response.data;
     } catch (error) {
       console.error('Error getting my accounts count:', error);
+
       throw error;
     }
 
@@ -166,9 +181,13 @@ export const downloadPassbook = async (accountId) => {
       });
       return response.data;
     } catch (error) {
-      console.error('Error getting total accounts:', error);
-      throw error;
-    }
+      if(error.response && error.response.status === 404){
+          throw new NotFoundError("Account not found");
+      } else{
+          throw error;
+      }
+      
+  }
 
   }
 
@@ -187,6 +206,7 @@ export const downloadPassbook = async (accountId) => {
       return response.data;
     } catch (error) {
       console.error('Error creating account:', error);
+
       throw error;
     }
   };

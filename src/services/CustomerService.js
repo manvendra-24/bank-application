@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { NotFoundError,UnAuthorized } from '../utils/errors/Error';
 
 export const getAllCustomers = async (params = {}, headers = {}) => {
     const token = localStorage.getItem('token');
@@ -20,6 +21,9 @@ export const getAllCustomers = async (params = {}, headers = {}) => {
 };
 
 export const getCustomerById = async (id, params = {}, headers = {}) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get(`http://localhost:8081/api/customers/${id}`, {
@@ -30,13 +34,20 @@ export const getCustomerById = async (id, params = {}, headers = {}) => {
         });
         return response.data; 
     } catch (error) {
-        console.error("There was an error fetching the customer!", error);
-        throw error;
+        if(error.response && error.response.status === 404){
+            throw new NotFoundError("Customer not found");
+        } else{
+            throw error;
+        }
+        
     }
 };
 
 
 export const updateCustomer = async (id, customerData) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.put(`http://localhost:8081/api/customers/${id}`, customerData, {
@@ -47,13 +58,20 @@ export const updateCustomer = async (id, customerData) => {
         });
         return response.data;
     } catch (error) {
-        console.error("Error updating customer data:", error);
-        throw error;
+        if(error.response && error.response.status === 404){
+            throw new NotFoundError("Customer not found");
+        } else{
+            throw error;
+        }
+        
     }
 };
 
 
 export const getTotalCustomers = async ()=>{
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
       const response = await axios.get(`http://localhost:8081/api/customers/count`, {
@@ -71,6 +89,9 @@ export const getTotalCustomers = async ()=>{
 
 
   export const getCustomer = async (headers = {}) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get(`http://localhost:8081/api/customer`, {
@@ -87,6 +108,9 @@ export const getTotalCustomers = async ()=>{
 };
 
 export const getAccountsByCustomer = async (id, params = {}, headers = {}) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.get(`http://localhost:8081/api/customers/${id}/accounts`, {
@@ -114,6 +138,9 @@ export const addCustomer = async (userData) => {
   };
 
   export const addAdmin = async (userData,  headers={})=>{
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
     try {
         const response = await axios.post(`http://localhost:8081/api/auth/registerAdmin`,
@@ -133,6 +160,9 @@ export const addCustomer = async (userData) => {
   }
 
   export const deactivateCustomer = async (id) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
   
     try {
@@ -148,6 +178,9 @@ export const addCustomer = async (userData) => {
   };
 
   export const activateCustomer = async (id) => {
+    if(!localStorage.getItem('token')){
+        throw new UnAuthorized("User is not logged in");
+    }
     const token = localStorage.getItem('token');
 
     try {

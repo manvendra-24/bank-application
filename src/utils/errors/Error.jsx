@@ -15,3 +15,9 @@ export class ValidationError extends CustomError {
         super(500, "Bad Request", specificMessage)
     }
 }
+
+export class InvalidCredentialError extends CustomError{
+    constructor(specificMessage){
+        super(400, "Invalid Credentials", specificMessage)
+    }
+}

@@ -3,14 +3,18 @@ import { Navbar, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
 
+import ToastNotification, { showToast } from '../../sharedComponents/ToastNotification';
+
 const Header = ({role}) => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
-    };
-
+        showToast('Logged out successfully!', 'success');
+        setTimeout(() => {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }, 500);
+      };
     const linkStyle = {
         color: 'black',
         padding: '0.5rem 1rem',
@@ -35,7 +39,7 @@ const Header = ({role}) => {
             }} 
             className="w-100"
         >
-            {role == "admin" && <Navbar.Brand href="/admin-dashboard" className="fw-bold text-primary">
+            {role === "admin" && <Navbar.Brand href="/admin-dashboard" className="fw-bold text-primary">
                 BankApp.
             </Navbar.Brand>}
             {role === "customer" && <Navbar.Brand href="/customer-dashboard" className="fw-bold text-primary">
@@ -71,6 +75,7 @@ const Header = ({role}) => {
                     </Nav.Link>
                 </Nav>
             </Navbar.Collapse>
+            <ToastNotification />
         </Navbar>
     );
 }
